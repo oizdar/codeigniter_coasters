@@ -6,7 +6,7 @@ services:
       context: ./
       dockerfile: ./docker/php/Dockerfile
     working_dir: /var/www/
-    container_name: coasters_php_fpm
+    container_name: coasters_php
     volumes:
       - coasters-volume:/var/www
     depends_on:

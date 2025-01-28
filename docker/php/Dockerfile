@@ -3,15 +3,22 @@ ARG APP_ENV
 
 COPY . /var/www
 
+RUN chown -R www-data:www-data /var/www
+RUN chmod -R 755 /var/www/writable
+
 WORKDIR /var/www
+
 
 RUN apt-get update && \
     apt-get install -y \
     git \
     zip \
-    curl
+    curl \
+    libicu-dev
 
-#RUN docker-php-ext-install redis
+RUN docker-php-ext-install intl
+RUN docker-php-ext-enable intl
+
 RUN pecl install --onlyreqdeps --force redis \
 && rm -rf /tmp/pear \
 && docker-php-ext-enable redis
