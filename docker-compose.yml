@@ -1,0 +1,42 @@
+services:
+  php_fpm:
+    build:
+      args:
+        APP_ENV: local
+      context: ./
+      dockerfile: ./docker/php/Dockerfile
+    working_dir: /var/www/
+    container_name: coasters_php_fpm
+    volumes:
+      - coasters-volume:/var/www
+    depends_on:
+      - redis
+    networks:
+      - coasters-network
+
+  nginx:
+    image: nginx:latest
+    container_name: coasters_ngnix
+    networks:
+      - coasters-network
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - coasters-volume:/var/www/
+    depends_on:
+      - php_fpm
+      - redis
+    ports:
+      - "80:80"
+
+  redis:
+    image: redis:latest
+    container_name: coasters_redis
+    networks:
+        - coasters-network
+
+networks:
+  coasters-network:
+    driver: bridge
+
+volumes:
+  coasters-volume:

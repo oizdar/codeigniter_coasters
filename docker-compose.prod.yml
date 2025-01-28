@@ -1,0 +1,5 @@
+services:
+  php_fpm:
+    build:
+      args:
+        APP_ENV: prod
