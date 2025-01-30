@@ -1,0 +1,53 @@
+<?php
+
+namespace App\Controllers\Coasters;
+
+use App\Controllers\BaseController;
+use App\Helpers\ResponsesHelper;
+use CodeIgniter\HTTP\ResponseInterface;
+
+class CreateCoasters extends BaseController
+{
+    private $rules = [
+        'number_of_staff' => [
+            'required',
+            'integer',
+            'greater_than_equal_to[1]',
+            'less_than_equal_to[100]',
+        ],
+        'number_of_clients' => [
+            'required',
+            'integer',
+            'greater_than_equal_to[1]',
+            'less_than_equal_to[1000000]',
+
+        ],
+        'route_length' => [
+            'required',
+            'integer',
+            'greater_than_equal_to[1]',
+            'less_than_equal_to[100000]',
+        ],
+        'hours_from' => [
+            'required',
+            'valid_time',
+        ],
+        'hours_to' => [
+            'required',
+            'valid_time',
+        ],
+    ];
+
+    public function __invoke(): ResponseInterface
+    {
+        $requestData = $this->request->getJSON(true);
+        if(!$this->validateData($requestData, $this->rules)) {
+            return ResponsesHelper::error(lang('Validation.failed'), $this->validator->getErrors());
+        };
+
+        $validData = $this->validator->getValidated();
+
+
+        return ResponsesHelper::created('Coaster', $validData);
+    }
+}
