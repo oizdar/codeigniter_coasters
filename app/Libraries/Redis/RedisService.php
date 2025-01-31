@@ -19,7 +19,7 @@ class RedisService
     public function save(string $key, $data, int $ttl = 3600): bool
     {
         $serializedData = serialize($data); // Serialize the model/data
-        $this->client->setex($key, $ttl, $serializedData);
+        $this->client->set($key, $serializedData);
         return true;
     }
 

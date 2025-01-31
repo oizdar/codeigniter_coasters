@@ -3,6 +3,7 @@
 namespace App\Libraries\Coasters;
 
 use App\Libraries\Redis\RedisService;
+use App\Models\Coaster;
 use Ramsey\Uuid\UuidInterface;
 
 class CoastersService
@@ -12,14 +13,20 @@ class CoastersService
     {
     }
 
-    public function save(CreateCoasterData $data): void
+    public function save(CreateCoasterData $data): Coaster
     {
-        $this->redisService->save('coasters_' . $data->uuid, $data);
+        $coaster = Coaster::fromCreateCoasterData($data);
+        $this->redisService->save('coasters_' . $coaster->uuid, $coaster->toArray());
+
+        return $coaster;
     }
 
-    public function get(UuidInterface $uuid): ?CreateCoasterData
+    public function get(UuidInterface $uuid): ?Coaster
     {
-        return $this->redisService->get('coasters_' . $uuid->toString());
+        $data = $this->redisService->get('coasters_' . $uuid->toString());
+
+        return $data ? Coaster::fromSerialized($data) : null;
+
     }
 
     public function delete(UuidInterface $uuid): bool
