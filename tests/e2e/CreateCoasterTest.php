@@ -121,7 +121,7 @@ final class CreateCoasterTest extends CIUnitTestCase
         $result = $this->withBody(json_encode($postData))
             ->post('/api/coasters');
 
-        $result->assertStatus(ResponseInterface::HTTP_BAD_REQUEST);
+        $result->assertStatus(ResponseInterface::HTTP_UNPROCESSABLE_ENTITY);
 
         $result->assertJSONExact([
             'message' => 'Validation failed.',

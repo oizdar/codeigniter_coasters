@@ -132,7 +132,7 @@ final class UpdateCoasterTest extends CIUnitTestCase
         $result = $this->withBody(json_encode($postData))
             ->put('/api/coasters/' . $this->coaster->uuid);
 
-        $result->assertStatus(ResponseInterface::HTTP_BAD_REQUEST);
+        $result->assertStatus(ResponseInterface::HTTP_UNPROCESSABLE_ENTITY);
 
         $result->assertJSONExact([
             'message' => 'Validation failed.',

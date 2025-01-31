@@ -3,7 +3,7 @@
 namespace App\Controllers\Coasters;
 
 use App\Controllers\BaseController;
-use App\Helpers\ResponsesHelper;
+use App\Helpers\ResponseHelper;
 use App\Libraries\Coasters\CoastersService;
 use App\Libraries\Coasters\UpdateCoasterData;
 use CodeIgniter\HTTP\ResponseInterface;
@@ -59,18 +59,18 @@ class UpdateCoaster extends BaseController
         $requestData['uuid'] = $uuid;
 
         if(!$this->validateData($requestData, $this->rules)) {
-            return ResponsesHelper::error(lang('Validation.failed'), $this->validator->getErrors());
+            return ResponseHelper::validationError(lang('Validation.failed'), $this->validator->getErrors());
         };
 
         $validData = $this->validator->getValidated();
 
         $coaster = $this->coastersService->get(Uuid::fromString($uuid));
         if(!$coaster) {
-            return ResponsesHelper::notFound('Coaster', $uuid);
+            return ResponseHelper::notFound('Coaster', $validData['uuid']);
         }
 
         $updated = $this->coastersService->update($coaster, UpdateCoasterData::fromArray($validData));
 
-        return ResponsesHelper::updated('Coaster', $updated->toArray());
+        return ResponseHelper::updated('Coaster', $updated->toArray());
     }
 }

@@ -3,7 +3,7 @@
 namespace App\Controllers\Coasters;
 
 use App\Controllers\BaseController;
-use App\Helpers\ResponsesHelper;
+use App\Helpers\ResponseHelper;
 use App\Libraries\Coasters\CoastersService;
 use App\Libraries\Coasters\CreateCoasterData;
 use CodeIgniter\HTTP\ResponseInterface;
@@ -52,7 +52,7 @@ class CreateCoaster extends BaseController
     {
         $requestData = $this->request->getJSON(true);
         if(!$this->validateData($requestData, $this->rules)) {
-            return ResponsesHelper::error(lang('Validation.failed'), $this->validator->getErrors());
+            return ResponseHelper::validationError(lang('Validation.failed'), $this->validator->getErrors());
         };
 
         $validData = $this->validator->getValidated();
@@ -60,6 +60,6 @@ class CreateCoaster extends BaseController
         $model = $this->coastersService->create(CreateCoasterData::fromArray($validData));
 
 
-        return ResponsesHelper::created('Coaster', $model->toArray());
+        return ResponseHelper::created('Coaster', $model->toArray());
     }
 }

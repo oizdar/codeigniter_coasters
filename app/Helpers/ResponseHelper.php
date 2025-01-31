@@ -4,7 +4,7 @@ namespace App\Helpers;
 
 use CodeIgniter\HTTP\ResponseInterface;
 
-class ResponsesHelper
+class ResponseHelper
 {
 
     public static function prepare(?string $message, int $statusCode, ?array $data = null, ): ResponseInterface
@@ -42,7 +42,14 @@ class ResponsesHelper
             data: $data
         );
     }
-
+    public static function validationError(?string $message, $data = null): ResponseInterface
+    {
+        return self::prepare(
+            message: $message,
+            statusCode: ResponseInterface::HTTP_UNPROCESSABLE_ENTITY,
+            data: $data
+        );
+    }
     public static function error(?string $message, $data = null): ResponseInterface
     {
         return self::prepare(

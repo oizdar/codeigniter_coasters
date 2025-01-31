@@ -3,9 +3,8 @@
 namespace App\Controllers\Coasters;
 
 use App\Controllers\BaseController;
-use App\Helpers\ResponsesHelper;
+use App\Helpers\ResponseHelper;
 use App\Libraries\Coasters\CoastersService;
-use App\Libraries\Coasters\CreateCoasterData;
 use App\Libraries\Coasters\CreateCoasterWagonData;
 use CodeIgniter\HTTP\ResponseInterface;
 use Config\Services;
@@ -45,24 +44,18 @@ class CreateCoasterWagon extends BaseController
         $requestData['coaster_uuid'] = $coasterUuid;
 
         if(!$this->validateData($requestData, $this->rules)) {
-            return ResponsesHelper::error(lang('Validation.failed'), $this->validator->getErrors());
+            return ResponseHelper::validationError(lang('Validation.failed'), $this->validator->getErrors());
         };
 
         $validData = $this->validator->getValidated();
 
         $coaster = $this->coastersService->get(Uuid::fromString($coasterUuid));
         if(!$coaster) {
-            return ResponsesHelper::notFound('Coaster', $coasterUuid);
+            return ResponseHelper::notFound('Coaster', $validData['coaster_uuid']);
         }
-
-        if(!$this->validateData($requestData, $this->rules)) {
-            return ResponsesHelper::error(lang('Validation.failed'), $this->validator->getErrors());
-        }
-
-        $validData = $this->validator->getValidated();
 
         $wagon = $this->coastersService->addWagon($coaster, CreateCoasterWagonData::fromArray($validData));
 
-        return ResponsesHelper::created('Wagon', $wagon->toArray());
+        return ResponseHelper::created('Wagon', $wagon->toArray());
     }
 }
