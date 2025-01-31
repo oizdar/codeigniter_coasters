@@ -2,7 +2,10 @@
 
 namespace Config;
 
+use App\Libraries\Coasters\CoastersService;
+use App\Libraries\Redis\RedisService;
 use CodeIgniter\Config\BaseService;
+use Predis\Client;
 
 /**
  * Services Configuration file.
@@ -19,14 +22,58 @@ use CodeIgniter\Config\BaseService;
  */
 class Services extends BaseService
 {
-    /*
-     * public static function example($getShared = true)
-     * {
-     *     if ($getShared) {
-     *         return static::getSharedInstance('example');
-     *     }
-     *
-     *     return new \CodeIgniter\Example();
-     * }
+
+    /**
+     * @param bool $getShared
+     * @return Client
      */
+    public static function redisClient(bool $getShared = true): object
+    {
+        if ($getShared) {
+            return static::getSharedInstance('redisClient');
+        }
+
+        /** @var Redis $config */
+        $config = config('Redis');
+        $group = $config->defaultGroup;
+        $settings = $config->{$group};
+
+        // Initialize Predis or any Redis connection library
+        return new Client([
+            'scheme' => 'tcp',
+            'host' => $settings['host'],
+            'port' => $settings['port'],
+            'password' => $settings['password'],
+            'database' => $settings['database'],
+        ]);
+    }
+
+    /**
+     * @return RedisService
+     */
+    public static function redis(bool $getShared = true): object
+    {
+        if ($getShared) {
+            return static::getSharedInstance('redis');
+        }
+
+        /** @var Client $redisClient */
+        $redisClient = service('redisClient');
+
+        return new RedisService($redisClient);
+    }
+
+    /**
+     * @return CoastersService
+     */
+    public static function coastersService(bool $getShared = true): object
+    {
+        if ($getShared) {
+            return static::getSharedInstance('coastersService');
+        }
+
+        /** @var RedisService $redis */
+        $redis = service('redis');
+        return new CoastersService($redis);
+    }
 }
