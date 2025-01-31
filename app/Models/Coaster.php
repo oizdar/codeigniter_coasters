@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\Collection;
 use App\Libraries\Coasters\CreateCoasterData;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
@@ -10,6 +11,11 @@ class Coaster
 {
 
     public readonly UuidInterface $uuid;
+
+    /**
+     * @var Collection<Wagon>
+     */
+    private Collection $wagons;
 
     public function __construct(
         ?UuidInterface $uuid = null,
@@ -20,6 +26,7 @@ class Coaster
         public string $hours_to,
     ) {
         $this->uuid = $uuid ?? Uuid::uuid4();
+        $this->wagons = new Collection();
     }
 
     /**
@@ -49,6 +56,7 @@ class Coaster
             'route_length' => $this->route_length,
             'hours_from' => $this->hours_from,
             'hours_to' => $this->hours_to,
+            'wagons' => $this->wagons->map(fn(Wagon $wagon) => $wagon->toArray()),
         ];
     }
 
@@ -57,7 +65,7 @@ class Coaster
      */
     public static function fromSerialized(array $data): self
     {
-        return new self(
+        $coaster = new self(
             uuid: Uuid::fromString($data['uuid']),
             number_of_staff: $data['number_of_staff'],
             number_of_clients: $data['number_of_clients'],
@@ -65,5 +73,40 @@ class Coaster
             hours_from: $data['hours_from'],
             hours_to: $data['hours_to']
         );
+
+
+        foreach ($data['wagons'] ?? [] as $wagon) {
+            $coaster->wagons->add(Wagon::fromSerialized($wagon));
+        }
+
+        return $coaster;
+    }
+
+    /**
+     * @return Collection<Wagon>
+     */
+    public function getWagons(): Collection
+    {
+        return $this->wagons;
+    }
+
+    public function addWagon(Wagon $wagon): void
+    {
+        $this->wagons->add($wagon);
+    }
+
+    public function removeWagon(int $index): void
+    {
+        $this->wagons->remove($index);
+    }
+
+    public function updateWagon(int $index, Wagon $newWagon): void
+    {
+        $this->wagons->update($index, $newWagon);
+    }
+
+    public function findWagon(callable $callback): ?int
+    {
+        return $this->wagons->find($callback);
     }
 }

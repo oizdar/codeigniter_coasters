@@ -57,7 +57,7 @@ class CreateCoaster extends BaseController
 
         $validData = $this->validator->getValidated();
 
-        $model = $this->coastersService->save(CreateCoasterData::fromArray($validData));
+        $model = $this->coastersService->create(CreateCoasterData::fromArray($validData));
 
 
         return ResponsesHelper::created('Coaster', $model->toArray());

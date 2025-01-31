@@ -4,6 +4,7 @@ namespace unit;
 
 use App\Libraries\Coasters\CoastersService;
 use App\Libraries\Coasters\CreateCoasterData;
+use App\Libraries\Coasters\CreateCoasterWagonData;
 use App\Libraries\Coasters\UpdateCoasterData;
 use CodeIgniter\Test\CIUnitTestCase;
 
@@ -32,7 +33,7 @@ class CoastersServiceTest extends CIUnitTestCase
             '16:00'
         );
 
-        $coasterModel = $this->coastersService->save($createCoasterData);
+        $coasterModel = $this->coastersService->create($createCoasterData);
         $this->assertEquals($coasterModel, $this->coastersService->get($coasterModel->uuid));
 
         $updateCoasterData = new UpdateCoasterData(
@@ -52,6 +53,7 @@ class CoastersServiceTest extends CIUnitTestCase
             'route_length' => 3600,
             'hours_from' => '9:00',
             'hours_to' => '17:00',
+            'wagons' => [],
         ], $this->coastersService->get($coasterModel->uuid)->toArray());
 
 
@@ -72,8 +74,20 @@ class CoastersServiceTest extends CIUnitTestCase
             'route_length' => 3600,
             'hours_from' => '9:00',
             'hours_to' => '19:00',
+            'wagons' => [],
         ], $this->coastersService->get($coasterModel->uuid)->toArray());
 
+        $createCoasterWagonData = new CreateCoasterWagonData(
+            1,
+            1,
+        );
+        $createCoasterWagonData2 = new CreateCoasterWagonData(
+            1,
+            1,
+        );
+        $this->coastersService->addWagon($coasterModel, $createCoasterWagonData);
+        $this->coastersService->addWagon($coasterModel, $createCoasterWagonData2);
+        $this->assertEquals(2, $this->coastersService->get($coasterModel->uuid)->getWagons()->count());
 
         $this->coastersService->delete($coasterModel->uuid);
         $this->assertNull($this->coastersService->get($coasterModel->uuid));

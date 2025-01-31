@@ -26,7 +26,7 @@ final class UpdateCoasterTest extends CIUnitTestCase
         /** @var CoastersService $coastersService */
         $coastersService =  service('coastersService');
         $this->coastersService = $coastersService;
-        $this->coaster = $this->coastersService->save(
+        $this->coaster = $this->coastersService->create(
             new CreateCoasterData(
             1,
             16,

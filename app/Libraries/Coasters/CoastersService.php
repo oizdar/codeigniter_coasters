@@ -4,6 +4,7 @@ namespace App\Libraries\Coasters;
 
 use App\Libraries\Redis\RedisService;
 use App\Models\Coaster;
+use App\Models\Wagon;
 use Ramsey\Uuid\UuidInterface;
 
 class CoastersService
@@ -13,7 +14,7 @@ class CoastersService
     {
     }
 
-    public function save(CreateCoasterData $data): Coaster
+    public function create(CreateCoasterData $data): Coaster
     {
         $coaster = Coaster::fromCreateCoasterData($data);
         $this->redisService->save('coasters_' . $coaster->uuid, $coaster->toArray());
@@ -45,5 +46,15 @@ class CoastersService
     public function delete(UuidInterface $uuid): bool
     {
         return $this->redisService->delete('coasters_' . $uuid->toString());
+    }
+
+    public function addWagon(Coaster $coaster, CreateCoasterWagonData $data): Wagon
+    {
+        $wagon = Wagon::fromCreateCoasterWagonData($data);
+        $coaster->addWagon($wagon);
+
+        $this->redisService->save('coasters_' . $coaster->uuid, $coaster->toArray());
+
+        return $wagon;
     }
 }

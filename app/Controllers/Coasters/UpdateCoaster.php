@@ -5,7 +5,6 @@ namespace App\Controllers\Coasters;
 use App\Controllers\BaseController;
 use App\Helpers\ResponsesHelper;
 use App\Libraries\Coasters\CoastersService;
-use App\Libraries\Coasters\CreateCoasterData;
 use App\Libraries\Coasters\UpdateCoasterData;
 use CodeIgniter\HTTP\ResponseInterface;
 use Config\Services;
