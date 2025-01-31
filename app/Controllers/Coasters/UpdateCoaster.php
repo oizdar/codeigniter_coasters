@@ -6,37 +6,43 @@ use App\Controllers\BaseController;
 use App\Helpers\ResponsesHelper;
 use App\Libraries\Coasters\CoastersService;
 use App\Libraries\Coasters\CreateCoasterData;
+use App\Libraries\Coasters\UpdateCoasterData;
 use CodeIgniter\HTTP\ResponseInterface;
 use Config\Services;
+use Ramsey\Uuid\Uuid;
 
-class CreateCoaster extends BaseController
+class UpdateCoaster extends BaseController
 {
     private array $rules = [
-        'number_of_staff' => [
+        'uuid' => [
             'required',
+            'uuid',
+        ],
+        'number_of_staff' => [
+            'permit_empty',
             'integer',
             'greater_than_equal_to[1]',
             'less_than_equal_to[100]',
         ],
         'number_of_clients' => [
-            'required',
+            'permit_empty',
             'integer',
             'greater_than_equal_to[1]',
             'less_than_equal_to[1000000]',
 
         ],
         'route_length' => [
-            'required',
+            'permit_empty',
             'integer',
             'greater_than_equal_to[1]',
             'less_than_equal_to[100000]',
         ],
         'hours_from' => [
-            'required',
+            'permit_empty',
             'valid_time',
         ],
         'hours_to' => [
-            'required',
+            'permit_empty',
             'valid_time',
         ],
     ];
@@ -48,18 +54,24 @@ class CreateCoaster extends BaseController
         $this->coastersService = Services::coastersService();
     }
 
-    public function __invoke(): ResponseInterface
+    public function __invoke(string $uuid): ResponseInterface
     {
         $requestData = $this->request->getJSON(true);
+        $requestData['uuid'] = $uuid;
+
         if(!$this->validateData($requestData, $this->rules)) {
             return ResponsesHelper::error(lang('Validation.failed'), $this->validator->getErrors());
         };
 
         $validData = $this->validator->getValidated();
 
-        $model = $this->coastersService->save(CreateCoasterData::fromArray($validData));
+        $coaster = $this->coastersService->get(Uuid::fromString($uuid));
+        if(!$coaster) {
+            return ResponsesHelper::notFound('Coaster', $uuid);
+        }
 
+        $updated = $this->coastersService->update($coaster, UpdateCoasterData::fromArray($validData));
 
-        return ResponsesHelper::created('Coaster', $model->toArray());
+        return ResponsesHelper::updated('Coaster', $updated->toArray());
     }
 }

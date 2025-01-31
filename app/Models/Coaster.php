@@ -19,7 +19,7 @@ class Coaster
         public string $hours_from,
         public string $hours_to,
     ) {
-        $this->uuid = $uuid  ?? Uuid::uuid4();
+        $this->uuid = $uuid ?? Uuid::uuid4();
     }
 
     /**
@@ -43,7 +43,7 @@ class Coaster
     public function toArray(): array
     {
         return [
-            'uuid' => $this->uuid,
+            'uuid' => $this->uuid->toString(),
             'number_of_staff' => $this->number_of_staff,
             'number_of_clients' => $this->number_of_clients,
             'route_length' => $this->route_length,
@@ -58,7 +58,7 @@ class Coaster
     public static function fromSerialized(array $data): self
     {
         return new self(
-            uuid: $data['uuid'],
+            uuid: Uuid::fromString($data['uuid']),
             number_of_staff: $data['number_of_staff'],
             number_of_clients: $data['number_of_clients'],
             route_length: $data['route_length'],

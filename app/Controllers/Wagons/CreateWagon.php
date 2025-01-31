@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controllers\Coasters;
+namespace App\Controllers\Wagons;
 
 use App\Controllers\BaseController;
 use App\Helpers\ResponsesHelper;
@@ -9,9 +9,9 @@ use App\Libraries\Coasters\CreateCoasterData;
 use CodeIgniter\HTTP\ResponseInterface;
 use Config\Services;
 
-class CreateCoaster extends BaseController
+class CreateWagon extends BaseController
 {
-    private array $rules = [
+    private $rules = [
         'number_of_staff' => [
             'required',
             'integer',
@@ -53,13 +53,12 @@ class CreateCoaster extends BaseController
         $requestData = $this->request->getJSON(true);
         if(!$this->validateData($requestData, $this->rules)) {
             return ResponsesHelper::error(lang('Validation.failed'), $this->validator->getErrors());
-        };
+        }
 
         $validData = $this->validator->getValidated();
 
-        $model = $this->coastersService->save(CreateCoasterData::fromArray($validData));
+        $this->coastersService->save(CreateCoasterData::fromArray($validData));
 
-
-        return ResponsesHelper::created('Coaster', $model->toArray());
+        return ResponsesHelper::created('Coaster', $validData);
     }
 }

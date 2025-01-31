@@ -2,16 +2,29 @@
 
 namespace e2e;
 
+use App\Libraries\Coasters\CoastersService;
 use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\Test\CIUnitTestCase;
 use CodeIgniter\Test\FeatureTestTrait;
+use Ramsey\Uuid\Uuid;
 
 /**
  * @internal
  */
-final class CreateCoastersTest extends CIUnitTestCase
+final class CreateCoasterTest extends CIUnitTestCase
 {
     use FeatureTestTrait;
+
+    private CoastersService $coastersService;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        /** @var CoastersService $coastersService */
+        $coastersService =  service('coastersService');
+        $this->coastersService = $coastersService;
+    }
 
     public function testPostCoastersCreated(): void
     {
@@ -28,10 +41,14 @@ final class CreateCoastersTest extends CIUnitTestCase
 
         $result->assertStatus(ResponseInterface::HTTP_CREATED);
 
-        $result->assertJSONExact([
+        $result->assertJSONFragment([
             'message' => lang('Response.created', ['model' => 'Coaster']),
             'data' => $postData,
         ]);
+
+
+        $uuid = Uuid::fromString(json_decode($result->getJSON())->data->uuid);
+        $this->assertNotNull($this->coastersService->get($uuid));
     }
 
 
