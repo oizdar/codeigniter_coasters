@@ -13,7 +13,7 @@ final class CreateCoastersTest extends CIUnitTestCase
 {
     use FeatureTestTrait;
 
-    public function testPostCoastersSuccess(): void
+    public function testPostCoastersCreated(): void
     {
         $postData = [
             'number_of_staff' => 16,

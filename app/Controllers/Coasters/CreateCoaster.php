@@ -4,9 +4,12 @@ namespace App\Controllers\Coasters;
 
 use App\Controllers\BaseController;
 use App\Helpers\ResponsesHelper;
+use App\Libraries\Coasters\CoastersService;
+use App\Libraries\Coasters\CreateCoasterData;
 use CodeIgniter\HTTP\ResponseInterface;
+use Config\Services;
 
-class CreateCoasters extends BaseController
+class CreateCoaster extends BaseController
 {
     private $rules = [
         'number_of_staff' => [
@@ -38,6 +41,13 @@ class CreateCoasters extends BaseController
         ],
     ];
 
+    private CoastersService $coastersService;
+
+    public function __construct()
+    {
+        $this->coastersService = Services::coastersService();
+    }
+
     public function __invoke(): ResponseInterface
     {
         $requestData = $this->request->getJSON(true);
@@ -46,6 +56,8 @@ class CreateCoasters extends BaseController
         };
 
         $validData = $this->validator->getValidated();
+
+        $this->coastersService->save(CreateCoasterData::fromArray($validData));
 
 
         return ResponsesHelper::created('Coaster', $validData);

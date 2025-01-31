@@ -1,6 +1,6 @@
 <?php
 
-use App\Controllers\Coasters\CreateCoasters;
+use App\Controllers\Coasters\CreateCoaster;
 use CodeIgniter\Router\RouteCollection;
 
 /**
@@ -9,5 +9,5 @@ use CodeIgniter\Router\RouteCollection;
 $routes->get('/', 'Home::index');
 
 $routes->group('api', function ($routes) {
-    $routes->post('coasters', [CreateCoasters::class, '__invoke']);
+    $routes->post('coasters', [CreateCoaster::class, '__invoke']);
 });

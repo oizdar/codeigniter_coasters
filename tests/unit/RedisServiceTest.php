@@ -20,7 +20,10 @@ class RedisServiceTest extends CIUnitTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->redisService = Services::redis();
+
+        /** @var RedisService $redisService */
+        $redisService =  service('redis');
+        $this->redisService = $redisService;
     }
 
     public function testServiceActions(): void
