@@ -95,18 +95,23 @@ class Coaster
         $this->wagons->add($wagon);
     }
 
-    public function removeWagon(int $index): void
+    public function findWagonKey(UuidInterface $uuid): ?int
     {
+        return $this->wagons->find(fn(Wagon $wagon) => $wagon->uuid->equals($uuid));
+    }
+
+    public function removeWagonByUuid(UuidInterface $wagonUuid): void
+    {
+        $index = $this->findWagonKey($wagonUuid);
+
         $this->wagons->remove($index);
     }
 
-    public function updateWagon(int $index, Wagon $newWagon): void
-    {
-        $this->wagons->update($index, $newWagon);
-    }
 
-    public function findWagon(callable $callback): ?int
+    public function getWagonByUuid(UuidInterface $wagonUuid): ?Wagon
     {
-        return $this->wagons->find($callback);
+        $index = $this->findWagonKey($wagonUuid);
+
+        return $this->wagons->get($index);
     }
 }

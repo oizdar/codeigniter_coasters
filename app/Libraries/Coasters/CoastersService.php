@@ -43,11 +43,6 @@ class CoastersService
 
     }
 
-    public function delete(UuidInterface $uuid): bool
-    {
-        return $this->redisService->delete('coasters_' . $uuid->toString());
-    }
-
     public function addWagon(Coaster $coaster, CreateCoasterWagonData $data): Wagon
     {
         $wagon = Wagon::fromCreateCoasterWagonData($data);
@@ -56,5 +51,12 @@ class CoastersService
         $this->redisService->save('coasters_' . $coaster->uuid, $coaster->toArray());
 
         return $wagon;
+    }
+
+    public function deleteWagon(Coaster $coaster, UuidInterface $wagonUuid): void
+    {
+        $coaster->removeWagonByUuid($wagonUuid);
+
+        $this->redisService->save('coasters_' . $coaster->uuid, $coaster->toArray());
     }
 }

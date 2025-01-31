@@ -88,8 +88,5 @@ class CoastersServiceTest extends CIUnitTestCase
         $this->coastersService->addWagon($coasterModel, $createCoasterWagonData);
         $this->coastersService->addWagon($coasterModel, $createCoasterWagonData2);
         $this->assertEquals(2, $this->coastersService->get($coasterModel->uuid)->getWagons()->count());
-
-        $this->coastersService->delete($coasterModel->uuid);
-        $this->assertNull($this->coastersService->get($coasterModel->uuid));
     }
 }

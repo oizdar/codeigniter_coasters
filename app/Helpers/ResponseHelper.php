@@ -66,4 +66,9 @@ class ResponseHelper
             statusCode: ResponseInterface::HTTP_NOT_FOUND,
         );
     }
+
+    public static function noContent(): ResponseInterface
+    {
+        return response()->setStatusCode(ResponseInterface::HTTP_NO_CONTENT);
+    }
 }

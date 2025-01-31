@@ -21,6 +21,15 @@ class Collection
         $this->items[] = $item;
     }
 
+    /**
+     * @param int $index
+     * @return T|null
+     */
+    public function get(int $index)
+    {
+        return $this->items[$index] ?? null;
+    }
+
     public function remove(int $index): void
     {
         if (isset($this->items[$index])) {
