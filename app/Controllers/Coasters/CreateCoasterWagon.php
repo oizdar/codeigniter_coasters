@@ -22,12 +22,14 @@ class CreateCoasterWagon extends BaseController
             'integer',
             'greater_than_equal_to[1]',
             'less_than_equal_to[100]',
+            'validate_coaster_wagon_number_of_places[coaster_uuid]',
         ],
         'speed' => [
             'required',
             'numeric',
             'greater_than[0]',
             'less_than_equal_to[100]',
+            'validate_coaster_wagon_speed[coaster_uuid]',
         ],
     ];
 
@@ -42,7 +44,7 @@ class CreateCoasterWagon extends BaseController
     {
         $requestData = $this->request->getJSON(true);
         $requestData['coaster_uuid'] = $coasterUuid;
-
+        $requestData['wagons'] = [];
         if(!$this->validateData($requestData, $this->rules)) {
             return ResponseHelper::validationError(lang('Validation.failed'), $this->validator->getErrors());
         };
