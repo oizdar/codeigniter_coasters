@@ -16,5 +16,8 @@ return [
             'no_wagons' => 'No wagons',
             'too_many_wagons' => 'Too many wagons: {wagons} wagons',
         ],
-    ]
+    ],
+    'redis' => [
+        'error' => 'Error while saving data to Redis: {error}',
+    ],
 ];

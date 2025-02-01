@@ -6,6 +6,7 @@ use App\Libraries\Redis\RedisService;
 use App\Models\Coaster;
 use App\Models\Wagon;
 use Ramsey\Uuid\UuidInterface;
+use function React\Async\await;
 
 class CoastersService
 {
@@ -37,7 +38,7 @@ class CoastersService
 
     public function get(UuidInterface $uuid): ?Coaster
     {
-        $data = $this->redisService->get('coasters_' . $uuid->toString());
+        $data = await($this->redisService->get('coasters_' . $uuid->toString()));
 
         return $data ? Coaster::fromSerialized($data) : null;
 

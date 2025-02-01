@@ -3,7 +3,7 @@
 namespace App\Libraries\Redis;
 
 use Clue\React\Redis\RedisClient;
-use React\Promise\Promise;
+use React\Promise\PromiseInterface;
 
 class RedisService
 {
@@ -11,26 +11,48 @@ class RedisService
     {
     }
 
-    public function save(string $key, $data): Promise
+    public function save(string $key, $data): PromiseInterface
     {
         $serializedData = serialize($data);
 
-       return $this->client->set($key, $serializedData);
+        return $this->client->set($key, $serializedData)->then(
+            function () {
+                // log success
+            }, function ($error) {
+                // log error
+        });
     }
 
-    public function get(string $key)
+    public function get(string $key): PromiseInterface
     {
-        $data = $this->client->get($key);
-        return $data ? unserialize($data) : null;
+        return $this->client->get($key)->then(
+            function ($value) {
+                return $value ? unserialize($value) : null;
+                // log success
+            }, function ($error) {
+                // log error
+            });
     }
 
-    public function delete(string $key): bool
+    public function delete(string $key): PromiseInterface
     {
-        return $this->client->del([$key]) > 0;
+        return $this->client->del([$key])->then(
+            function ($value) {
+                return $value ? unserialize($value) : null;
+                // log success
+            }, function ($error) {
+            // log error
+        });
     }
 
-    public function exists(string $key): bool
+    public function exists(string $key): PromiseInterface
     {
-        return $this->client->exists($key) > 0;
+        return $this->client->exists($key)->then(
+            function ($value) {
+                // log success
+                return $value > 0;
+            }, function ($error) {
+            // log error
+        });
     }
 }

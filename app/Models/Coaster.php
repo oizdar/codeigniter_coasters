@@ -117,7 +117,15 @@ class Coaster
 
     public function getServedPassengersDaily(): int
     {
-        return array_sum($this->wagons->map(fn(Wagon $wagon) => $wagon->servedPassengersDaily($this->route_length, new \DateTimeImmutable($this->hours_from), new \DateTimeImmutable($this->hours_to))));
+        return array_sum($this->wagons->map(
+            fn(Wagon $wagon) =>
+                $wagon->servedPassengersDaily(
+                    $this->route_length,
+                    new \DateTimeImmutable($this->hours_from),
+                    new \DateTimeImmutable($this->hours_to)
+                )
+            )
+        );
     }
     public function getExpectedNumberOfWagons(): int
     {
@@ -132,7 +140,11 @@ class Coaster
 
     public function getRequiredStaff(): int
     {
-        return 1 + ($this->getExpectedNumberOfWagons() * 2);
+        $wagons = $this->wagons->count() > $this->getExpectedNumberOfWagons()
+            ? $this->wagons->count()
+            : $this->getExpectedNumberOfWagons();
+
+        return 1 + ($wagons * 2);
     }
 
     public function getVerbalizedStatus(): string
@@ -148,7 +160,7 @@ class Coaster
             );
         }
 
-        if ($this->wagons->count()) {
+        if ($this->wagons->count() === 0) {
             $errors[] = lang('Messages.coaster.status.no_wagons');
         } elseif ($this->getServedPassengersDaily() > ($this->number_of_clients * 2)) {
             $errors[] = lang('Messages.coaster.status.too_many_wagons',

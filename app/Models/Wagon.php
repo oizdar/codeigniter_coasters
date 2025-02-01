@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\DateTimeHelper;
 use App\Libraries\Coasters\CreateCoasterWagonData;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
@@ -56,11 +57,12 @@ class Wagon
         );
     }
 
-    public function servedPassengersDaily($length, \DateTimeImmutable $timeFrom, \DateTimeImmutable $timeTo)
+    public function servedPassengersDaily(int $length, \DateTimeImmutable $timeFrom, \DateTimeImmutable $timeTo)
     {
+
         $seconds = ceil($length / $this->speed) + self::PAUSE_BETWEEN_RUNS_IN_SECONDS;
 
-        $wholeTimeSeconds = $timeTo->diff($timeFrom)->s;
+        $wholeTimeSeconds = DateTimeHelper::intervalInSeconds($timeTo->diff($timeFrom));
 
         $runs = floor($wholeTimeSeconds / $seconds);
 
