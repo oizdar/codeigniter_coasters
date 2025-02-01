@@ -82,13 +82,13 @@ final class UpdateCoasterTest extends CIUnitTestCase
                 [
                 'number_of_staff' => 'a',
                 'number_of_clients' => 'b',
-                'route_length' => 'c',
+                'hours_from' => '10:99',
                 'hours_to' => '99:00',
                 ],
                 [
                     'number_of_staff' => lang('Validation.integer', ['field' => 'number_of_staff']),
                     'number_of_clients' => lang('Validation.integer', ['field' => 'number_of_clients']),
-                    'route_length' => lang('Validation.integer', ['field' => 'route_length']),
+                    'hours_from' => lang('Validation.valid_time', ['field' => 'hours_from']),
                     'hours_to' => lang('Validation.valid_time', ['field' => 'hours_to']),
                 ]
             ],
@@ -96,28 +96,24 @@ final class UpdateCoasterTest extends CIUnitTestCase
                 [
                     'number_of_staff' => 0,
                     'number_of_clients' => 0,
-                    'route_length' => 0,
                     'hours_from' => '8:00',
                     'hours_to' => '19:00',
                 ],
                 [
                     'number_of_staff' => lang('Validation.greater_than_equal_to', ['field' => 'number_of_staff', 'param' => '1']),
                     'number_of_clients' => lang('Validation.greater_than_equal_to', ['field' => 'number_of_clients', 'param' => '1']),
-                    'route_length' => lang('Validation.greater_than_equal_to', ['field' => 'route_length', 'param' => '1']),
                 ]
             ],
             [
                 [
                     'number_of_staff' => 99999999,
                     'number_of_clients' => 99999999,
-                    'route_length' => 99999999,
                     'hours_from' => '8:00',
                     'hours_to' => '19:00',
                 ],
                 [
                     'number_of_staff' => lang('Validation.less_than_equal_to', ['field' => 'number_of_staff', 'param' => '100']),
                     'number_of_clients' => lang('Validation.less_than_equal_to', ['field' => 'number_of_clients', 'param' => '1000000']),
-                    'route_length' => lang('Validation.less_than_equal_to', ['field' => 'route_length', 'param' => '100000']),
                 ]
             ]
 

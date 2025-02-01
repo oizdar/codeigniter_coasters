@@ -5,7 +5,7 @@ namespace Config;
 use App\Libraries\Coasters\CoastersService;
 use App\Libraries\Redis\RedisService;
 use CodeIgniter\Config\BaseService;
-use Predis\Client;
+use Clue\React\Redis\RedisClient;
 
 /**
  * Services Configuration file.
@@ -38,14 +38,13 @@ class Services extends BaseService
         $group = $config->defaultGroup;
         $settings = $config->{$group};
 
+        $uri = $settings['host']
+            . ':' . $settings['port']
+            . '?database=' . $settings['database']
+            . ($settings['password'] ? '&password=' . $settings['password'] : '');
+
         // Initialize Predis or any Redis connection library
-        return new Client([
-            'scheme' => 'tcp',
-            'host' => $settings['host'],
-            'port' => $settings['port'],
-            'password' => $settings['password'],
-            'database' => $settings['database'],
-        ]);
+        return new RedisClient($uri);
     }
 
     /**
@@ -57,7 +56,7 @@ class Services extends BaseService
             return static::getSharedInstance('redis');
         }
 
-        /** @var Client $redisClient */
+        /** @var RedisClient $redisClient */
         $redisClient = service('redisClient');
 
         return new RedisService($redisClient);

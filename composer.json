@@ -11,8 +11,8 @@
     },
     "require": {
         "php": "^8.3",
+        "clue/redis-react": "^3@dev",
         "codeigniter4/framework": "^4.0",
-        "predis/predis": "^2.3",
         "ramsey/uuid": "^4.7"
     },
     "require-dev": {

@@ -2,53 +2,33 @@
 
 namespace App\Libraries\Redis;
 
-use Predis\Client;
+use Clue\React\Redis\RedisClient;
+use React\Promise\Promise;
 
 class RedisService
 {
-    public function __construct(private Client $client)
+    public function __construct(private RedisClient $client)
     {
     }
 
-    /**
-     * Save data to Redis.
-     * @param string $key
-     * @param mixed $data
-     * @param int $ttl Time-to-live in seconds
-     */
-    public function save(string $key, $data, int $ttl = 3600): bool
+    public function save(string $key, $data): Promise
     {
-        $serializedData = serialize($data); // Serialize the model/data
-        $this->client->set($key, $serializedData);
-        return true;
+        $serializedData = serialize($data);
+
+       return $this->client->set($key, $serializedData);
     }
 
-    /**
-     * Retrieve data from Redis.
-     * @param string $key
-     * @return mixed|null
-     */
     public function get(string $key)
     {
         $data = $this->client->get($key);
-        return $data ? unserialize($data) : null; // Unserialize the data
+        return $data ? unserialize($data) : null;
     }
 
-    /**
-     * Delete data from Redis.
-     * @param string $key
-     * @return bool
-     */
     public function delete(string $key): bool
     {
         return $this->client->del([$key]) > 0;
     }
 
-    /**
-     * Check if a key exists in Redis.
-     * @param string $key
-     * @return bool
-     */
     public function exists(string $key): bool
     {
         return $this->client->exists($key) > 0;

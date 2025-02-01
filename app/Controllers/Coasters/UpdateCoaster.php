@@ -30,12 +30,6 @@ class UpdateCoaster extends BaseController
             'less_than_equal_to[1000000]',
 
         ],
-        'route_length' => [
-            'permit_empty',
-            'integer',
-            'greater_than_equal_to[1]',
-            'less_than_equal_to[100000]',
-        ],
         'hours_from' => [
             'permit_empty',
             'valid_time',

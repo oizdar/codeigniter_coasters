@@ -114,4 +114,54 @@ class Coaster
 
         return $this->wagons->get($index);
     }
+
+    public function getServedPassengersDaily(): int
+    {
+        return array_sum($this->wagons->map(fn(Wagon $wagon) => $wagon->servedPassengersDaily($this->route_length, new \DateTimeImmutable($this->hours_from), new \DateTimeImmutable($this->hours_to))));
+    }
+    public function getExpectedNumberOfWagons(): int
+    {
+        if($this->wagons->count() === 0) {
+            return 0;
+        }
+
+        $averagePerWagon = $this->getServedPassengersDaily() / $this->wagons->count();
+
+        return $this->number_of_clients / $averagePerWagon;
+    }
+
+    public function getRequiredStaff(): int
+    {
+        return 1 + ($this->getExpectedNumberOfWagons() * 2);
+    }
+
+    public function getVerbalizedStatus(): string
+    {
+        $errors = [];
+        if ($this->getRequiredStaff() > $this->number_of_staff) {
+            $errors[] = lang('Messages.coaster.status.not_enough_staff',
+                ['below' => $this->getRequiredStaff() - $this->number_of_staff]
+            );
+        } elseif($this->getRequiredStaff() < $this->number_of_staff) {
+            $errors[] = lang('Messages.coaster.status.too_much_staff',
+                ['above' => $this->number_of_staff - $this->getRequiredStaff()]
+            );
+        }
+
+        if ($this->wagons->count()) {
+            $errors[] = lang('Messages.coaster.status.no_wagons');
+        } elseif ($this->getServedPassengersDaily() > ($this->number_of_clients * 2)) {
+            $errors[] = lang('Messages.coaster.status.too_many_wagons',
+                [
+                    'wagons' => $this->wagons->count() - $this->getExpectedNumberOfWagons(),
+                ]);
+        }
+
+
+        if(count($errors) > 0) {
+            return lang('Messages.coaster.status.problem') . ucfirst(implode(", ", $errors));
+        }
+
+        return lang('Messages.coaster.status.ok');
+    }
 }

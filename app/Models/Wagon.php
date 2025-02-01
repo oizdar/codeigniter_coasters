@@ -8,6 +8,7 @@ use Ramsey\Uuid\UuidInterface;
 
 class Wagon
 {
+    private const int PAUSE_BETWEEN_RUNS_IN_SECONDS =  5 * 60;
 
     public readonly UuidInterface $uuid;
 
@@ -53,5 +54,16 @@ class Wagon
             number_of_places: $data['number_of_places'],
             speed: $data['speed'],
         );
+    }
+
+    public function servedPassengersDaily($length, \DateTimeImmutable $timeFrom, \DateTimeImmutable $timeTo)
+    {
+        $seconds = ceil($length / $this->speed) + self::PAUSE_BETWEEN_RUNS_IN_SECONDS;
+
+        $wholeTimeSeconds = $timeTo->diff($timeFrom)->s;
+
+        $runs = floor($wholeTimeSeconds / $seconds);
+
+        return $runs * $this->number_of_places;
     }
 }

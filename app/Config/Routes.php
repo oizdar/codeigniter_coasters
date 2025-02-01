@@ -19,3 +19,5 @@ $routes->group('api', function ($routes) {
     $routes->post('coasters/(:uuid)/wagons', [CreateCoasterWagon::class, '__invoke']);
     $routes->delete('coasters/(:uuid)/wagons/(:uuid)', [DeleteCoasterWagon::class, '__invoke']);
 });
+
+$routes->cli('monitor:coasters', [App\Commands\MonitorCoasters::class, 'run']);
