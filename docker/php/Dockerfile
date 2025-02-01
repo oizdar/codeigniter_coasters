@@ -1,13 +1,14 @@
 FROM php:8.3-fpm
 ARG APP_ENV
+ARG UID
+ARG GID
 
 COPY . /var/www
 
-RUN chown -R www-data:www-data /var/www
-RUN chmod -R 755 /var/www/writable
+RUN groupmod -g $GID www-data && \
+    usermod -u $UID -g $GID www-data
 
 WORKDIR /var/www
-
 
 RUN apt-get update && \
     apt-get install -y \
@@ -17,15 +18,9 @@ RUN apt-get update && \
     libicu-dev
 
 RUN docker-php-ext-install intl
-RUN docker-php-ext-enable intl
+RUN pecl install --onlyreqdeps --force redis
 
-RUN pecl install --onlyreqdeps --force redis \
-&& rm -rf /tmp/pear \
-&& docker-php-ext-enable redis
+RUN docker-php-ext-enable intl \
+    redis
 
-RUN mv .env.${APP_ENV} .env
-
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
-
-EXPOSE 9000
-CMD ["php-fpm"]
+USER www-data
