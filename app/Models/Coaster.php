@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Helpers\Collection;
+use App\Libraries\Coasters\CoasterStatusData;
 use App\Libraries\Coasters\CreateCoasterData;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
@@ -147,33 +148,30 @@ class Coaster
         return 1 + ($wagons * 2);
     }
 
-    public function getVerbalizedStatus(): string
+    public function getStatus(): CoasterStatusData
     {
-        $errors = [];
+        $status = new CoasterStatusData();
+
         if ($this->getRequiredStaff() > $this->number_of_staff) {
-            $errors[] = lang('Messages.coaster.status.not_enough_staff',
+            $status->addError(lang('Messages.coaster.status.not_enough_staff',
                 ['below' => $this->getRequiredStaff() - $this->number_of_staff]
-            );
-        } elseif($this->getRequiredStaff() < $this->number_of_staff) {
-            $errors[] = lang('Messages.coaster.status.too_much_staff',
+            ));
+        } elseif ($this->getRequiredStaff() < $this->number_of_staff) {
+            $status->addError(lang('Messages.coaster.status.too_much_staff',
                 ['above' => $this->number_of_staff - $this->getRequiredStaff()]
-            );
+            ));
         }
 
         if ($this->wagons->count() === 0) {
-            $errors[] = lang('Messages.coaster.status.no_wagons');
+            $status->addError(lang('Messages.coaster.status.no_wagons'));
         } elseif ($this->getServedPassengersDaily() > ($this->number_of_clients * 2)) {
-            $errors[] = lang('Messages.coaster.status.too_many_wagons',
+            $status->addError(lang('Messages.coaster.status.too_many_wagons',
                 [
                     'wagons' => $this->wagons->count() - $this->getExpectedNumberOfWagons(),
-                ]);
+                ]
+            ));
         }
 
-
-        if(count($errors) > 0) {
-            return lang('Messages.coaster.status.problem') . ucfirst(implode(", ", $errors));
-        }
-
-        return lang('Messages.coaster.status.ok');
+        return $status;
     }
 }

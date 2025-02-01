@@ -16,6 +16,7 @@ return [
             'no_wagons' => 'No wagons',
             'too_many_wagons' => 'Too many wagons: {wagons} wagons',
         ],
+        'error_log' => '[{dateTime}] Coaster {coasterId} - {message}',
     ],
     'redis' => [
         'error' => 'Error while saving data to Redis: {error}',

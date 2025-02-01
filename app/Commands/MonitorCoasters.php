@@ -3,6 +3,7 @@
 namespace App\Commands;
 
 use App\Models\Coaster;
+use Clue\React\Redis\RedisClient;
 use CodeIgniter\CLI\BaseCommand;
 use CodeIgniter\CLI\CLI;
 use CodeIgniter\CLI\Commands;
@@ -17,10 +18,15 @@ class MonitorCoasters extends BaseCommand
     protected $name        = 'monitor:coasters';
     protected $description = 'Monitor coaster stats in realtime.';
 
+    private RedisClient $redisClient;
+
     public function __construct(LoggerInterface $logger, Commands $commands)
     {
         parent::__construct($logger, $commands);
-        $this->redisClient = service('redisClient');
+
+        /** @var RedisClient $redisClient */
+        $redisClient = service('redisClient');
+        $this->redisClient = $redisClient;
     }
 
     public function run(array $params)
@@ -52,7 +58,18 @@ class MonitorCoasters extends BaseCommand
                         ['staff' => $coasterModel->number_of_staff, 'required_staff' => $coasterModel->getRequiredStaff()])
                     );
                     CLI::write(lang('Messages.coaster.clients', ['clients' => $coasterModel->number_of_clients]));
-                    CLI::write($coasterModel->getVerbalizedStatus());
+                    $coasterStatus = $coasterModel->getStatus();
+                    if($coasterStatus->isOk()) {
+                        CLI::write($coasterStatus->getOkMessage(), 'green');
+                    } else {
+                        CLI::error($coasterStatus->getErrorMessage());
+                        $this->logger->debug($coasterStatus->getErrorMessage());
+                        $this->redisClient->publish('coaster_errors', json_encode([
+                            'dateTime' => (new \DateTimeImmutable())->format('Y-m-d H:i:s'),
+                            'coasterId' => $coasterModel->uuid,
+                            'message' => $coasterStatus->getErrorMessage(),
+                        ]));
+                    }
                     CLI::write("------------------\n");
                 }
             }, function ($error) {
