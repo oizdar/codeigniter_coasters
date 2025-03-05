@@ -29,6 +29,9 @@ class CustomRules
 
         $wagon = $this->getWagonForValidation($coasterUuid);
 
+        if($wagon === null) {
+            return true;
+        }
         return $wagon?->number_of_places === $value;
     }
 
@@ -39,6 +42,10 @@ class CustomRules
         }
 
         $wagon = $this->getWagonForValidation($coasterUuid);
+
+        if($wagon === null) {
+            return true;
+        }
 
         return $wagon?->speed === $value;
     }
