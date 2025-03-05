@@ -36,12 +36,11 @@ class RedisService
 
     public function delete(string $key): PromiseInterface
     {
-        return $this->client->del([$key])->then(
+        return $this->client->del($key)->then(
             function ($value) {
-                return $value ? unserialize($value) : null;
                 // log success
             }, function ($error) {
-            // log error
+                // log error
         });
     }
 

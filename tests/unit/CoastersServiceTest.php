@@ -6,6 +6,7 @@ use App\Libraries\Coasters\CoastersService;
 use App\Libraries\Coasters\CreateCoasterData;
 use App\Libraries\Coasters\CreateCoasterWagonData;
 use App\Libraries\Coasters\UpdateCoasterData;
+use App\Models\Wagon;
 use CodeIgniter\Test\CIUnitTestCase;
 
 class CoastersServiceTest extends CIUnitTestCase
@@ -88,5 +89,36 @@ class CoastersServiceTest extends CIUnitTestCase
         $this->coastersService->addWagon($coasterModel, $createCoasterWagonData);
         $this->coastersService->addWagon($coasterModel, $createCoasterWagonData2);
         $this->assertEquals(2, $this->coastersService->get($coasterModel->uuid)->getWagons()->count());
+    }
+
+    public function testCoasterEdgeCase(): void
+    {
+        $createCoasterData = new CreateCoasterData(
+            1,
+            2000,
+            1000,
+            '8:00',
+            '16:00'
+        );
+
+        $coasterModel = $this->coastersService->create($createCoasterData);
+        $this->assertEquals($coasterModel, $this->coastersService->get($coasterModel->uuid));
+
+        $createCoasterWagonData = new CreateCoasterWagonData(
+            5,
+            1,
+        );
+
+        $this->coastersService->addWagon($coasterModel, $createCoasterWagonData);
+        $coaster = $this->coastersService->get($coasterModel->uuid);
+
+        $this->assertEquals(19, $coaster->getExpectedNumberOfWagons());
+        $this->assertEquals(39, $coaster->getRequiredStaff());
+
+        /** @var Wagon $wagon */
+        $wagon = $coaster->getWagons()->get(0);
+        $servedDaily = $wagon->servedPassengersDaily($coaster->route_length, new \DateTimeImmutable($coaster->hours_from), new \DateTimeImmutable($coaster->hours_to));
+
+        $this->assertEquals(110, $servedDaily);
     }
 }

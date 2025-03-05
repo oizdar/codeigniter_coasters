@@ -136,7 +136,7 @@ class Coaster
 
         $averagePerWagon = $this->getServedPassengersDaily() / $this->wagons->count();
 
-        return $this->number_of_clients / $averagePerWagon;
+        return ceil($this->number_of_clients / $averagePerWagon);
     }
 
     public function getRequiredStaff(): int
